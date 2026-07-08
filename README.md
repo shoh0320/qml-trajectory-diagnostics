@@ -13,10 +13,22 @@ analyses in the main text and Supplemental Material.
 ## What is in this repository
 
 ```
-code/          available upon reasonable request
+code/          experiment and analysis scripts (PennyLane + NumPy/SciPy/pandas)
 data/          authentic per-task result tables (CSV) used for every figure and table
-manuscript/    compiled manuscript, Supplemental Material, LaTeX sources, and figures
+supplements/    compiled manuscript, Supplemental Material, LaTeX sources, and figures
 ```
+
+### `code/`
+
+| File | Purpose |
+|---|---|
+| `scaling_sweep.py` | Main scaling experiment: builds the XYZ/Heisenberg meta-learning tasks, the hardware-efficient ansatz, the Reptile meta-initialization, and records the alignment, gradient norms, improvements, and gap per task across `n ∈ {4,6,8,10}`, `L ∈ {2,3,5}`. Also supports the random-initialization baseline and the alternative Hamiltonian families / entangler topologies. |
+| `scaling_sweep.ipynb` | Annotated notebook version of the scaling experiment. |
+| `v17_core.py`, `v17_fast.py`, `run_v17_cond.py` | Corollary run (n = 6, L = 3): the five movement-conditioned adaptation settings behind Tables I–II and Fig. 2. |
+| `v17_corollary.ipynb` | Annotated notebook for the corollary run. |
+| `reviewer_analysis.py` | Robustness and partial-correlation analyses (stratified split, families/topologies, finite-shot proxy, baseline-corrected gap, held-out-loss control, K = 1 vs K = 10). |
+| `make_scaling_fig.py` | Generates Fig. 1 (`fig_scaling.pdf`). |
+| `make_pipeline.py` | Generates Fig. 4 (`fig1_pipeline.pdf`). |
 
 ### `data/`
 
@@ -37,9 +49,9 @@ All CSVs are authentic outputs of the scripts above — no values were hand-edit
 | `results_item13_randominit.csv` | Random-initialization baseline (per-task). |
 | `results_v17_pertask.csv`, `results_v17_tableI.csv`, `results_v17_tableII.csv` | Corollary run per-task table and the two summary tables (main-text Tables I–II). |
 
-### `supplement/`
+### `supplements/`
 
-`supplement.pdf` / `supplement.tex`
+`manuscript.pdf` / `manuscript.tex` (main text), `supplement.pdf` / `supplement.tex`
 (Supplemental Material), and `figs/` (all figures as PDF).
 
 ---
