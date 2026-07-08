@@ -13,7 +13,7 @@ analyses in the main text and Supplemental Material.
 ## What is in this repository
 
 ```
-code/          experiment and analysis scripts (PennyLane + NumPy/SciPy/pandas)
+code/          available upon reasonable request
 data/          authentic per-task result tables (CSV) used for every figure and table
 manuscript/    compiled manuscript, Supplemental Material, LaTeX sources, and figures
 ```
