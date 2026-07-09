@@ -1,6 +1,3 @@
-"""Fast, faithful v17 core. Batched qnode + analytic (backprop) inner gradient.
-Reproduces the original finite-diff results to ~1e-5 (finite-diff eps=1e-4 approximates
-the exact gradient to O(eps^2)). Task/split seed logic is byte-identical to the original."""
 import numpy as np
 import pennylane as qml
 from pennylane import numpy as pnp
