@@ -1,15 +1,3 @@
-#!/usr/bin/env python3
-"""Fig 1 for the PRA manuscript. Reads results_summary.csv, results_barren.csv,
-results_pertask.csv (full sweep: n in {4,6,8,10}, L in {2,3,5}, 3 seeds, 50 tasks).
-
-Panels:
-  (a) gradient-norm CV vs n per depth, with the i.i.d. Gaussian null 1/sqrt(2d)
-  (b) barren-plateau variance vs n per depth (log): markers are per-size means,
-      connected as a guide to the eye; the annotated rate b is an exponential fit
-  (c) pooled rho(A, I_val) vs n with a hierarchical-bootstrap 95% CI band
-      (ONLY the pooled curve -- no per-depth lines)
-  (d) raw / improvement-controlled / jointly-controlled rho(A, G) vs n
-"""
 import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np, pandas as pd
