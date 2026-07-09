@@ -1,0 +1,278 @@
+\documentclass[aps,pra,onecolumn,superscriptaddress,10pt]{revtex4-2}
+
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{bm}
+\raggedbottom
+
+% ---- shared macros (match main text) ----
+\newcommand{\CV}{\mathrm{CV}}
+\newcommand{\Itr}{I_{\mathrm{tr}}}
+\newcommand{\Ival}{I_{\mathrm{val}}}
+\newcommand{\thetaz}{\theta_0}
+\newcommand{\thetaK}{\theta_K}
+\newcommand{\Ltr}{L_{\mathrm{tr}}}
+\newcommand{\Lval}{L_{\mathrm{val}}}
+\newcommand{\gtr}{g_{\mathrm{tr}}}
+\newcommand{\gval}{g_{\mathrm{val}}}
+\newcommand{\Vtr}{V_{\mathrm{tr}}}
+
+\renewcommand{\thesection}{S\arabic{section}}
+\renewcommand{\thetable}{S\Roman{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\theequation}{S\arabic{equation}}
+
+\begin{document}
+
+\title{Supplemental Material:\\
+Gradient concentration constrains trajectory diagnostics
+in variational quantum meta-learning}
+
+\author{Sang Ho Oh}
+\affiliation{Department of Computer Engineering and Artificial Intelligence,
+Pukyong National University, Busan 48513, Korea}
+
+\maketitle
+
+This Supplemental Material collects the supporting analyses referenced in the main text: the
+concentration of the identity prefactor (Sec.~\ref{sm:prefactor}), the one-step versus multi-step
+identity check (Sec.~\ref{sm:kstep}), the association of alignment with the held-out loss rather than
+the gap (Sec.~\ref{sm:heldout}), the near-zero-mean-transfer character of the task family
+(Sec.~\ref{sm:transfer}), and four robustness checks---a term-type-stratified split, additional
+Hamiltonian families and entangler topologies, a finite-shot variance proxy, and a random
+initialization (Sec.~\ref{sm:robust}); and a synthetic positive control showing that the joint
+control passes a genuine alignment--gap signal (Sec.~\ref{sm:positive}). All quantities use the definitions, estimators, and
+hierarchical-bootstrap procedure of the main text. Rank correlations are Spearman coefficients; joint
+controls are partial rank correlations $\rho(A,G\,|\,\Ival,\Lval(\thetaz))$ unless stated otherwise.
+The underlying per-task tables are provided in the accompanying data repository.
+
+\section{Concentration of the identity prefactor}
+\label{sm:prefactor}
+
+The first-order identity of the main text reads $\Ival\approx\alpha\,A\,q$ with prefactor
+$q=\|\gtr\|\|\gval\|$. The controlling role of gradient concentration is a statement about the
+relative spread of $q$, not of $\|\gtr\|$ alone. Table~\ref{tab:cv} reports the pooled coefficient of
+variation of $\|\gtr\|$, $\|\gval\|$, and $q$ across tasks at each system size. Both gradient norms
+concentrate with scale, and the product $q$---being the product of two fluctuating norms---has a
+larger but likewise decreasing coefficient of variation. This is the regime in which the ranking of
+$\Ival$ collapses onto that of $A$.
+
+\begin{table}[h]
+\caption{\label{tab:cv}%
+Pooled coefficient of variation of the two gradient norms and of the identity prefactor
+$q=\|\gtr\|\|\gval\|$, as a function of system size $n$ (pooled over depth $L$ and seeds).}
+\begin{ruledtabular}
+\begin{tabular}{cccc}
+$n$ & $\CV(\|\gtr\|)$ & $\CV(\|\gval\|)$ & $\CV(q)$ \\
+\colrule
+$4$  & $0.336$ & $0.361$ & $0.551$ \\
+$6$  & $0.285$ & $0.282$ & $0.466$ \\
+$8$  & $0.246$ & $0.261$ & $0.406$ \\
+$10$ & $0.264$ & $0.261$ & $0.451$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\section{One-step versus multi-step identity}
+\label{sm:kstep}
+
+The identity is a first-order (tangent) expression; it is at its most accurate in the one-step limit.
+Table~\ref{tab:kstep} compares the rank correlation between the alignment $A$ and the validation
+improvement measured after a single inner step ($\Ival^{(1)}$) with that measured after the full
+$K=10$ inner steps ($\Ival^{(K)}$). At $K=1$ the correlation is near-perfect and essentially flat in
+$n$ ($0.95$--$0.97$), confirming that the tangent expression captures the one-step improvement
+directly. At $K=10$ the correlation is lower and rises with scale ($0.60$ to $0.85$): as gradients
+concentrate and adaptation steps shrink, the full trajectory moves closer to its initial tangent, and
+the identity increasingly predicts the multi-step improvement as well. The tightening reported in the
+main text is therefore the convergence of the $K$-step improvement toward the one-step tangent, not a
+change in the identity itself.
+
+\begin{table}[h]
+\caption{\label{tab:kstep}%
+Rank correlation of the support--validation alignment $A$ with the validation improvement after one
+inner step ($\Ival^{(1)}$) and after $K=10$ inner steps ($\Ival^{(K)}$), pooled over depth and seeds.}
+\begin{ruledtabular}
+\begin{tabular}{ccc}
+$n$ & $\rho(A,\Ival^{(1)})$ & $\rho(A,\Ival^{(K)})$ \\
+\colrule
+$4$  & $+0.95$ & $+0.60$ \\
+$6$  & $+0.96$ & $+0.68$ \\
+$8$  & $+0.97$ & $+0.76$ \\
+$10$ & $+0.97$ & $+0.85$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\section{Alignment versus the held-out loss}
+\label{sm:heldout}
+
+The main text controls the apparent association between $A$ and the observable-generalization gap
+$G$. The same conclusion holds when the target is the held-out loss $\Lval(\thetaK)$ itself rather
+than the gap. Table~\ref{tab:heldout} reports $\rho(A,\Lval(\thetaK))$ raw, controlling for the local
+improvement $\Ival$, and controlling jointly for $\Ival$ and the initial baseline $\Lval(\thetaz)$.
+The raw association is moderate and negative but is removed by the joint control at every size
+($|\rho|\le0.10$), so the vanishing residual is not special to the signed gap.
+
+\begin{table}[h]
+\caption{\label{tab:heldout}%
+Alignment versus the held-out loss $\Lval(\thetaK)$: raw rank correlation, controlling for the local
+improvement $\Ival$, and the joint control additionally removing the initial baseline
+$\Lval(\thetaz)$.}
+\begin{ruledtabular}
+\begin{tabular}{cccc}
+$n$ & $\rho(A,\Lval^{K})$ & $\rho(A,\Lval^{K}\,|\,\Ival)$ & $\rho(A,\Lval^{K}\,|\,\Ival,\Lval^{0})$ \\
+\colrule
+$4$  & $-0.56$ & $-0.34$ & $-0.06$ \\
+$6$  & $-0.49$ & $-0.39$ & $-0.03$ \\
+$8$  & $-0.45$ & $-0.38$ & $-0.10$ \\
+$10$ & $-0.36$ & $-0.38$ & $-0.02$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+We also report the baseline-corrected gap $\Delta G=[\Lval(\thetaK)-\Ltr(\thetaK)]-
+[\Lval(\thetaz)-\Ltr(\thetaz)]=\Itr-\Ival$, which removes the initial baseline at the level of the
+target. Its raw association with $A$ is $\rho(A,\Delta G)=-0.48,-0.55,-0.53,-0.59$ at $n=4,6,8,10$;
+controlling for $\Ival$ alone removes it, $\rho(A,\Delta G\,|\,\Ival)=+0.03,-0.03,-0.07,-0.10$.
+
+\section{Near-zero-mean-transfer regime}
+\label{sm:transfer}
+
+Table~\ref{tab:transfer} quantifies the transfer content of the primary task family. Support
+adaptation improves the support loss substantially (mean $\Itr$ from $+0.41$ to $+0.16$), but the
+mean validation improvement is statistically indistinguishable from zero at every size, with roughly
+half of tasks improving. The per-task spread of $\Ival$ remains nonzero and is the quantity the
+first-order identity predicts. This regime is a clean null-transfer setting by construction:
+coefficients are drawn independently and the linear observable loss over disjoint Pauli support and
+query subsets has no shared minimizer, so there is little mean observable transfer to detect.
+
+\begin{table}[h]
+\caption{\label{tab:transfer}%
+Transfer content of the primary task family: mean and standard deviation of the validation
+improvement $\Ival$, fraction of tasks with $\Ival>0$, and mean support improvement $\Itr$.}
+\begin{ruledtabular}
+\begin{tabular}{ccccc}
+$n$ & $\langle\Ival\rangle$ & $\mathrm{std}(\Ival)$ & $\mathrm{frac}(\Ival>0)$ & $\langle\Itr\rangle$ \\
+\colrule
+$4$  & $-0.008$ & $0.283$ & $0.47$ & $0.410$ \\
+$6$  & $+0.002$ & $0.161$ & $0.51$ & $0.313$ \\
+$8$  & $-0.003$ & $0.096$ & $0.49$ & $0.242$ \\
+$10$ & $+0.001$ & $0.060$ & $0.50$ & $0.158$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\section{Robustness checks}
+\label{sm:robust}
+
+The four checks below vary one ingredient of the setup at a time and confirm that the identity link
+and the vanishing joint-controlled gap association both persist.
+
+\subsection{Term-type-stratified support/query split}
+
+To rule out that the gap is an artifact of an unbalanced split, we stratify the support/query split
+so that $XX$, $YY$, $ZZ$, and $Z$ terms are balanced across the two subsets, and compare against the
+uniform (random) split. Table~\ref{tab:strat} shows that both splits preserve the high identity link
+and the near-zero joint-controlled gap association.
+
+\begin{table}[h]
+\caption{\label{tab:strat}%
+Uniform versus term-type-stratified support/query split. The identity link $\rho(A,\Ival)$ and the
+joint-controlled gap association $\rho(A,G\,|\,\Ival,\Lval(\thetaz))$ are preserved under
+stratification.}
+\begin{ruledtabular}
+\begin{tabular}{cccc}
+$n$ & split & $\rho(A,\Ival)$ & $\rho(A,G\,|\,\Ival,\Lval^{0})$ \\
+\colrule
+$4$ & uniform    & $0.35$ & $-0.29$ \\
+$4$ & stratified & $0.50$ & $+0.10$ \\
+$6$ & uniform    & $0.81$ & $-0.03$ \\
+$6$ & stratified & $0.72$ & $-0.05$ \\
+$8$ & uniform    & $0.76$ & $+0.04$ \\
+$8$ & stratified & $0.86$ & $-0.01$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\subsection{Additional Hamiltonian families and topologies}
+
+We repeat the analysis at $n=6$ for three Hamiltonian families---the anisotropic XYZ family of the
+main text, a transverse-field Ising model (TFIM), and a fixed random-local-Pauli family---each with a
+linear-chain and a ring entangler. Table~\ref{tab:families} shows that the identity link stays high
+($\rho(A,\Ival)=0.49$--$0.91$) and the joint-controlled gap association stays near zero ($-0.17$ to
+$+0.13$) throughout, so the mechanism is not specific to the XYZ family or the linear chain.
+
+\begin{table}[h]
+\caption{\label{tab:families}%
+Identity link and joint-controlled gap association across three Hamiltonian families and two
+entangler topologies ($n=6$, $L=3$).}
+\begin{ruledtabular}
+\begin{tabular}{llcc}
+family & topology & $\rho(A,\Ival)$ & $\rho(A,G\,|\,\Ival,\Lval^{0})$ \\
+\colrule
+XYZ        & linear & $0.81$ & $-0.03$ \\
+XYZ        & ring   & $0.89$ & $+0.08$ \\
+TFIM       & linear & $0.49$ & $+0.13$ \\
+TFIM       & ring   & $0.77$ & $+0.07$ \\
+rand.\ Pauli & linear & $0.78$ & $-0.03$ \\
+rand.\ Pauli & ring   & $0.91$ & $-0.17$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+\subsection{Finite-shot variance proxy}
+
+The observable-variance proxy $\Vtr$ is defined with a finite shot budget. To confirm that finite
+sampling does not remove the effect, we compare $\Vtr$ estimated at $100$ and $1000$ shots against
+the exact ($N_{\mathrm{shot}}\!\to\!\infty$) value across tasks. The rank agreement is $\rho=+0.84$
+at $100$ shots and $\rho=+0.98$ at $1000$ shots, with a small positive sampling bias (mean offset
+$+0.003$ and $+0.001$, respectively). Finite-shot statistics therefore add, rather than remove,
+sources of the artifact.
+
+\subsection{Random initialization}
+
+Finally, we replace the Reptile meta-initialization with a plain random initialization
+($\theta\sim\mathcal{N}(0,0.1^2)$, no meta-training) at $n=6$, $L=3$. The identity link is
+$\rho(A,\Ival)=+0.74$, the raw gap association is $\rho(A,G)=-0.27$, and it collapses under the joint
+control to $+0.07$---matching the Reptile arm ($0.68$, $-0.42$, $-0.01$). The identity and the
+artifact are thus properties of the first-order variational geometry rather than of the
+meta-initialization.
+
+\section{Synthetic positive control: the protocol passes genuine signal}
+\label{sm:positive}
+
+Every demonstration in the main text is a collapse case, so one may ask whether the joint control is
+simply too aggressive---whether it would erase a genuine alignment--gap association if one existed.
+A closed-form synthetic ensemble answers this. Per task we draw an alignment $A$, a norm product $q$
+with $\CV\approx0.45$ (matching the experiments), the identity-channel improvement
+$\Ival=\alpha A q+\varepsilon$, and an independent baseline $\Lval(\thetaz)$; the gap is then
+constructed in two ways. In the \emph{channels-only} construction,
+$G=-0.8\,\Ival+0.8\,\Lval(\thetaz)+\varepsilon'$, so any $A$--$G$ association flows entirely through
+the two controlled channels. In the \emph{genuine-channel} construction a direct term $-0.5\,A$ is
+added, representing a real alignment$\to$gap effect beyond local improvement and baseline. Three
+seeds of $150$ tasks each give Table~\ref{tab:positive}: the channels-only association collapses
+under the joint control ($-0.65\to-0.06$), exactly as in the physical experiments, while the
+genuine-channel association survives it ($-0.90\to-0.62$; per-seed range $[-0.66,-0.58]$). The numerical values depend on the injected channel strength: sweeping the direct coefficient from
+$0.1$ to $0.8$ (channel noise s.d.\ $0.10$) gives surviving joint-controlled correlations of $-0.21$,
+$-0.33$, $-0.45$, $-0.62$, and $-0.77$, so survival is robust down to injected strengths comparable
+to the channel noise. The
+controls of the falsification protocol therefore collapse channel artifacts without erasing genuine
+signal: a diagnostic that survives them is a real candidate, not a false negative.
+
+\begin{table}[h]
+\caption{\label{tab:positive}%
+Synthetic positive control. Rank correlation of alignment with the gap, raw and under the joint
+control, when the gap contains only the local-improvement and baseline channels versus when a
+genuine direct alignment channel is added ($3$ seeds $\times150$ tasks, pooled).}
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+construction & $\rho(A,G)$ & $\rho(A,G\,|\,\Ival)$ & $\rho(A,G\,|\,\Ival,\Lval^{0})$ \\
+\colrule
+channels only    & $-0.65$ & $-0.01$ & $-0.06$ \\
+genuine channel  & $-0.90$ & $-0.45$ & $-0.62$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
+
+
+\end{document}
