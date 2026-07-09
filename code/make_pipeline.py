@@ -1,20 +1,3 @@
-#!/usr/bin/env python3
-"""Fig 4: diagnostic-falsification workflow.
-Clean grid layout, orthogonal connectors only, every arrow labelled so the flow
-is unambiguous:
-
-  adaptation --(trajectory)--> diagnostics --(vs. target)--> apparent correlation
-                                                                   |
-  pre-specified target G ---(compared against)--------------------^   (feeds the correlation)
-                                                                   | subject to
-                                                                   v
-                                                             artifact controls
-                                                                   | collapse / survive
-                                                                   v
-                                                                verdict
-                                                                   ^
-  physical activators ---(explain a collapse)----------------------|
-"""
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
