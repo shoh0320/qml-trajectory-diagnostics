@@ -1,92 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-r"""
-scaling_sweep.py
-================
-Scaling-sweep experiment for the manuscript
-
-    "Adaptation-trajectory diagnostics fail to predict observable generalization
-     in variational quantum meta-learning"
-
-Purpose
--------
-Test the falsifiable physical prediction stated in Sec. IV C / Discussion:
-
-    As variational circuits are scaled toward the barren-plateau regime, the
-    concentration of circuit gradients increases (CV of the gradient norm
-    shrinks), so the first-order linearization identity
-
-        I_val  ~=  alpha * <g_val, g_tr>  =  alpha * cos(g_val,g_tr) * ||g_val|| * ||g_tr||
-
-    grips the gradient-alignment diagnostic ever more tightly. Consequently
-    gradient alignment becomes MORE strongly tied to LOCAL validation
-    improvement (I_val) while remaining a WEAK, seed-unstable predictor of the
-    HELD-OUT observable gap G = L_val(theta_K) - L_tr(theta_K).
-
-The script produces two complementary bodies of evidence, both as a function of
-qubit count n and depth L:
-
-  (A) Standard barren-plateau probe (random initializations):
-      Var[ d L_tr / d theta_1 ] and mean ||g|| vs (n, L).
-      This is the canonical McClean-et-al. signature and grounds the physical
-      claim in the established literature.
-
-  (B) The meta-learning diagnostic experiment (the paper's actual setting):
-      per evaluation task, at the Reptile meta-initialization theta_0, record
-        - ||g_tr||, ||g_val||, alignment A = cos(g_tr, g_val)
-        - I_val (validation improvement after K-step adaptation)
-        - G     (held-out observable gap)
-      then aggregate per (n, L, seed):
-        - CV(||g_tr||), CV(||g_val||)                 [gradient concentration]
-        - rho(A, I_val)                               [identity link]
-        - rho(IP, I_val), IP = A*||g_tr||*||g_val||   [the identity itself]
-        - identity_gap = rho(IP,I_val) - rho(A,I_val) [-> 0 as norms concentrate]
-        - rho(A, G) PER SEED                          [weak / sign-unstable link]
-
-What to look for (prediction confirmed if):
-  * mean ||g|| and Var[dL/dtheta_1] decrease with n (and L)        -> concentration
-  * CV(||g||) decreases with n (and L)                            -> concentration
-  * rho(A, I_val) stays high (and identity_gap -> 0)              -> identity dominance
-  * rho(A, G) stays weak and flips sign / magnitude across seeds  -> not a gap predictor
-
-Setup faithfully mirrors the manuscript
-----------------------------------------
-  * Task: random anisotropic Heisenberg/XYZ chain with local Z fields,
-          H_tau = sum_j c_{tau,j} P_{tau,j}, open boundary, M = 4n-3 Pauli terms.
-  * Observable support/query split ~ 2/3 : 1/3 (14/7 at n=6).
-  * Ansatz: hardware-efficient, L layers of (RY, RZ) per qubit + linear CNOT
-            chain; 2*n*L parameters.
-  * Adaptation: Reptile meta-init, K inner steps, inner/outer learning rates.
-  * Alignment gradients evaluated AT theta_0 (non-circular).
-  * Exact, noise-free state-vector simulation (PennyLane default.qubit, backprop).
-
-IMPORTANT — reproduce your exact task family
----------------------------------------------
-If you have the v17 task generator, replace `draw_coeffs` and `split_indices`
-below with your originals so the sweep matches the paper's task distribution
-exactly. The defaults here are a reasonable, documented stand-in; the *scaling
-trends* (the object of the prediction) are robust to the specific distribution,
-but matching your generator keeps absolute numbers comparable to Tables I--II.
-
-Outputs
--------
-  results_pertask.csv   one row per (n, L, seed, task): raw diagnostics
-  results_summary.csv   one row per (n, L, seed): aggregated correlations & CV
-  results_barren.csv    one row per (n, L, seed): barren-plateau probe
-  A human-readable summary is also printed to stdout.
-
-Requirements
-------------
-  pennylane, numpy, scipy, pandas   (matches the manuscript's environment)
-
-Usage
------
-  python scaling_sweep.py                 # full sweep (slow; run externally)
-  python scaling_sweep.py --quick         # fast smoke test
-  python scaling_sweep.py --n 4 6 8 10 12 --L 2 3 5 --seeds 3 \
-                          --n_outer 200 --n_eval 50 --K 10
-"""
-
 import argparse
 import time
 import numpy as np
@@ -383,7 +294,6 @@ def run(args):
 
 
 def print_report(summary, barren):
-    """Human-readable summary of whether the prediction is borne out."""
     print("\n" + "=" * 78)
     print("PREDICTION CHECK  (aggregated across seeds; rho(A,G) shown PER seed)")
     print("=" * 78)
