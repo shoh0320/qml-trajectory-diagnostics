@@ -1,43 +1,22 @@
-# GitHub 저장소 교체 가이드 (최종 제출본 반영)
+# GitHub 저장소 교체 가이드 (수리평가 반영 최종본)
 
-이 패키지는 **최초 업로드 이후 변경된 파일만** 담고 있습니다.
-데이터(`data/`), 나머지 코드, 나머지 그림은 변경이 없으므로 건드릴 필요 없습니다.
+**중요: 수리 특화 평가자가 공개 저장소를 직접 확인하여, supplement에 positive control이 없음(구버전)을 blocking으로 지적했습니다. 이번 교체는 제출 전 필수입니다.**
 
-## 교체 대상 (7개 파일)
+## 교체·추가 대상
 
-| 저장소 경로 | 변경 사유 |
+| 경로 | 내용 |
 |---|---|
-| `supplements/manuscript.pdf` | 최종 제출본 (blocking 3건 수정, 초록 342→242단어, date 제거 등) |
-| `supplements/manuscript.tex` | 위와 동일 |
-| `supplements/supplement.pdf` | date 제거 |
-| `supplements/supplement.tex` | date 제거 |
-| `supplements/figs/fig1_pipeline.pdf` | Fig 4: artifact-controls 박스에 baseline 반영 + 오버플로우 수정 |
-| `code/make_pipeline.py` | Fig 4 라벨 변경 |
-| `README.md` | 폴더명 `manuscript/` → `supplements/` 반영 |
+| `supplements/manuscript.pdf` / `.tex` | Eq.(3) one-step 표기 분리, Eq.(4)→exact line integral + Taylor 분리(신규 Eq.5), Methods 보강 4건, CV_null 각주 (12쪽) |
+| `supplements/supplement.pdf` / `.tex` | **S6 positive control 섹션 + Table SVII** (평가자 지적의 핵심), 민감도 문장, governs→predicts (4쪽) |
+| `supplements/figs/fig1_pipeline.pdf` | baseline 라벨 (기존) |
+| `code/make_pipeline.py` | 위 그림 스크립트 |
+| `data/results_positive_control_*.csv` | **신규 4개**: channels_only, genuine_channel, summary, sensitivity |
+| `README.md` | supplements/ 폴더명 + positive-control 데이터 행 추가 |
 
-## 웹에서 교체하는 방법 (가장 간편)
+## 방법 (웹)
+저장소 → Add file ▸ Upload files → 이 패키지의 `supplements/`, `code/`, `data/`, `README.md`를 통째로 드래그앤드롭 → Commit.
+(data/의 기존 CSV는 그대로 유지되고 신규 4개만 추가됩니다.)
 
-1. GitHub에서 저장소 열기 → **Add file ▸ Upload files**
-2. 이 패키지의 `supplements/`, `code/`, `README.md`를 **통째로 드래그앤드롭**
-   - 같은 경로의 기존 파일은 자동으로 새 버전으로 덮어써집니다(커밋 히스토리에 남음).
-3. 커밋 메시지 예: `Update to final submission version (post-review fixes)`
-4. **Commit changes**
-
-## git 명령어로 교체하는 방법
-
-```bash
-# 로컬 클론 폴더에서, 이 패키지의 내용물을 덮어쓴 뒤:
-git add -A
-git commit -m "Update to final submission version (post-review fixes)"
-git push
-```
-
-## 교체 후 확인
-
-- 저장소의 `supplements/manuscript.pdf` 첫 페이지에 "(Dated: ...)" 줄이 **없으면** 최신본입니다.
-- 원고의 [46] 참조가 이 저장소를 가리키므로, **APS 투고 직전에 이 교체를 완료**해 두는 것이 좋습니다.
-
-## (선택) Zenodo DOI
-
-제출 전에 GitHub에서 Release(예: `v1.0`)를 만들고 Zenodo와 연동하면 고정 DOI가 발급됩니다.
-DOI를 받으시면 알려주세요 — Data availability 문장에 함께 넣어드립니다.
+## 교체 확인
+- `supplements/supplement.pdf`에 **"S6. SYNTHETIC POSITIVE CONTROL"** 섹션과 Table SVII이 보이면 최신본.
+- `data/`에 `results_positive_control_summary.csv`가 보이면 완료.

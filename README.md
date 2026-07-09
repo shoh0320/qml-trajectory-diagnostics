@@ -15,7 +15,7 @@ analyses in the main text and Supplemental Material.
 ```
 code/          experiment and analysis scripts (PennyLane + NumPy/SciPy/pandas)
 data/          authentic per-task result tables (CSV) used for every figure and table
-supplements/    compiled manuscript, Supplemental Material, LaTeX sources, and figures
+supplements/  compiled manuscript, Supplemental Material, LaTeX sources, and figures
 ```
 
 ### `code/`
@@ -47,7 +47,8 @@ All CSVs are authentic outputs of the scripts above — no values were hand-edit
 | `results_item6_families.csv` | Additional Hamiltonian families and topologies (SM Table SVI). |
 | `results_item7_finiteshot.csv` | Finite-shot variance proxy check. |
 | `results_item13_randominit.csv` | Random-initialization baseline (per-task). |
-| `results_v17_pertask.csv`, `results_v17_tableI.csv`, `results_v17_tableII.csv` | Corollary run per-task table and the two summary tables (main-text Tables I–II). |
+| `results_v17_pertask.csv`, `results_v17_tableI.csv`, `results_v17_tableII.csv` | Corollary run per-task table and the two summary tables. |
+| `results_positive_control_*.csv` | Synthetic positive control (channels-only vs genuine-channel per-task tables, summary, and injected-strength sensitivity; SM Sec. S6). |
 
 ### `supplements/`
 

@@ -39,7 +39,8 @@ identity check (Sec.~\ref{sm:kstep}), the association of alignment with the held
 the gap (Sec.~\ref{sm:heldout}), the near-zero-mean-transfer character of the task family
 (Sec.~\ref{sm:transfer}), and four robustness checks---a term-type-stratified split, additional
 Hamiltonian families and entangler topologies, a finite-shot variance proxy, and a random
-initialization (Sec.~\ref{sm:robust}). All quantities use the definitions, estimators, and
+initialization (Sec.~\ref{sm:robust}); and a synthetic positive control showing that the joint
+control passes a genuine alignment--gap signal (Sec.~\ref{sm:positive}). All quantities use the definitions, estimators, and
 hierarchical-bootstrap procedure of the main text. Rank correlations are Spearman coefficients; joint
 controls are partial rank correlations $\rho(A,G\,|\,\Ival,\Lval(\thetaz))$ unless stated otherwise.
 The underlying per-task tables are provided in the accompanying data repository.
@@ -81,7 +82,7 @@ $K=10$ inner steps ($\Ival^{(K)}$). At $K=1$ the correlation is near-perfect and
 $n$ ($0.95$--$0.97$), confirming that the tangent expression captures the one-step improvement
 directly. At $K=10$ the correlation is lower and rises with scale ($0.60$ to $0.85$): as gradients
 concentrate and adaptation steps shrink, the full trajectory moves closer to its initial tangent, and
-the identity increasingly governs the multi-step improvement as well. The tightening reported in the
+the identity increasingly predicts the multi-step improvement as well. The tightening reported in the
 main text is therefore the convergence of the $K$-step improvement toward the one-step tangent, not a
 change in the identity itself.
 
@@ -235,5 +236,41 @@ $\rho(A,\Ival)=+0.74$, the raw gap association is $\rho(A,G)=-0.27$, and it coll
 control to $+0.07$---matching the Reptile arm ($0.68$, $-0.42$, $-0.01$). The identity and the
 artifact are thus properties of the first-order variational geometry rather than of the
 meta-initialization.
+
+\section{Synthetic positive control: the protocol passes genuine signal}
+\label{sm:positive}
+
+Every demonstration in the main text is a collapse case, so one may ask whether the joint control is
+simply too aggressive---whether it would erase a genuine alignment--gap association if one existed.
+A closed-form synthetic ensemble answers this. Per task we draw an alignment $A$, a norm product $q$
+with $\CV\approx0.45$ (matching the experiments), the identity-channel improvement
+$\Ival=\alpha A q+\varepsilon$, and an independent baseline $\Lval(\thetaz)$; the gap is then
+constructed in two ways. In the \emph{channels-only} construction,
+$G=-0.8\,\Ival+0.8\,\Lval(\thetaz)+\varepsilon'$, so any $A$--$G$ association flows entirely through
+the two controlled channels. In the \emph{genuine-channel} construction a direct term $-0.5\,A$ is
+added, representing a real alignment$\to$gap effect beyond local improvement and baseline. Three
+seeds of $150$ tasks each give Table~\ref{tab:positive}: the channels-only association collapses
+under the joint control ($-0.65\to-0.06$), exactly as in the physical experiments, while the
+genuine-channel association survives it ($-0.90\to-0.62$; per-seed range $[-0.66,-0.58]$). The numerical values depend on the injected channel strength: sweeping the direct coefficient from
+$0.1$ to $0.8$ (channel noise s.d.\ $0.10$) gives surviving joint-controlled correlations of $-0.21$,
+$-0.33$, $-0.45$, $-0.62$, and $-0.77$, so survival is robust down to injected strengths comparable
+to the channel noise. The
+controls of the falsification protocol therefore collapse channel artifacts without erasing genuine
+signal: a diagnostic that survives them is a real candidate, not a false negative.
+
+\begin{table}[b]
+\caption{\label{tab:positive}%
+Synthetic positive control. Rank correlation of alignment with the gap, raw and under the joint
+control, when the gap contains only the local-improvement and baseline channels versus when a
+genuine direct alignment channel is added ($3$ seeds $\times150$ tasks, pooled).}
+\begin{ruledtabular}
+\begin{tabular}{lccc}
+construction & $\rho(A,G)$ & $\rho(A,G\,|\,\Ival)$ & $\rho(A,G\,|\,\Ival,\Lval^{0})$ \\
+\colrule
+channels only    & $-0.65$ & $-0.01$ & $-0.06$ \\
+genuine channel  & $-0.90$ & $-0.45$ & $-0.62$ \\
+\end{tabular}
+\end{ruledtabular}
+\end{table}
 
 \end{document}

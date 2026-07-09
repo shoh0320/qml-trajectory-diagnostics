@@ -1,0 +1,3 @@
+scenario,rho_raw,rho_given_Ival,rho_joint,joint_min,joint_max
+channels_only,-0.649,-0.01,-0.062,-0.106,-0.016
+genuine_channel,-0.898,-0.454,-0.617,-0.659,-0.581
