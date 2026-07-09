@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-"""Reviewer-requested analyses computable from the existing full-run data:
- (1) A vs {G, |G|, L_val(thetaK), I_val} correlations, pooled per n, with
-     hierarchical bootstrap 95% CIs (resample (L,seed) configs, then tasks).
- (2) Sensitivity partials: rho(A,G|I_val), rho(A,G|I_val,Lval0),
-     rho(A,G|I_tr,I_val), rho(A,|G||I_val).
- (3) Seed-level spread of the key correlations (stability).
- (4) Null model: observed CV(||g_tr||) vs Gaussian null 1/sqrt(2d), d=2nL.
- (5) Barren-plateau variance: exponential fit slope (ln BPvar vs n) with CI.
-"""
 import numpy as np, pandas as pd
 from scipy.stats import spearmanr, rankdata
 
