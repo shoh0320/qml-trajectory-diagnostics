@@ -41,7 +41,7 @@ All CSVs are authentic outputs of the scripts above — no values were hand-edit
 
 ### `supplements/`
 
-`manuscript.pdf` / `manuscript.tex` (main text), `supplement.pdf` / `supplement.tex`
+`supplement.pdf` / `supplement.tex`
 (Supplemental Material), and `figs/` (all figures as PDF).
 
 ---
