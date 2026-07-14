@@ -108,5 +108,5 @@ If you use this code or data, please cite the paper (citation details to be adde
 
 ## License
 
-Code is released under the MIT License (`LICENSE`). The manuscript and figures are subject to the
+Code is released under the MIT License. The manuscript and figures are subject to the
 copyright terms of the published article.
