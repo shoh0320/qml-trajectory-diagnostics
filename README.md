@@ -1,112 +1,20 @@
-# Gradient concentration constrains trajectory diagnostics in variational quantum meta-learning
+# Auditing Trajectory-Based Transfer Diagnostics in Variational Quantum Learning
 
-Code, data, and manuscript for the paper
+Code, per-task data, and Supplemental Material for the manuscript
+*"Auditing Trajectory-Based Transfer Diagnostics in Variational Quantum Learning"* (submitted to *Electronics*, Special Issue *Advanced Computer Science and Intelligent Systems Innovations*).
 
-> **Gradient concentration constrains trajectory diagnostics in variational quantum meta-learning**
-> Sang Ho Oh (Department of Computer Engineering and Artificial Intelligence, Pukyong National University, Busan, Korea)
+## What this repository contains
 
-This repository contains everything needed to reproduce the figures, tables, and statistical
-analyses in the main text and Supplemental Material.
+This is a **metric-audit study**: it examines what trajectory-derived scalars (parameter drift, an observable-variance proxy, and support–query gradient alignment) actually measure during few-shot adaptation of variational quantum circuits on Heisenberg/XYZ task families (4–10 qubits, depths 2/3/5). The analysis separates first-order optimization coupling, target-construction overlap, and configuration-level instability, and states explicitly which claims are and are not supported without an independent support–validation–test split.
 
----
+- `code/` — simulation and analysis scripts (PennyLane, statevector). `scaling_sweep.py` reproduces the main sweep; `run_v17_cond.py`/`v17_core.py` reproduce the corollary configuration; `make_pipeline.py` regenerates the audit-workflow figure; `analysis.py` reproduces the reported statistics from the CSVs.
+- `data/` — per-task CSVs (`results_pertask.csv`, `results_barren.csv`, `results_v17_*.csv`). Every statistic reported in the manuscript, including the configuration-level attribution and target-decomposition checks, can be recomputed from these files.
+- `supplements/` — Supplemental Material source and PDF (Tables SI–SVII).
 
-## What is in this repository
+## Reproducing reported numbers
 
-```
-code/          experiment and analysis scripts (PennyLane + NumPy/SciPy/pandas)
-data/          authentic per-task result tables (CSV) used for every figure and table
-supplements/  compiled manuscript, Supplemental Material, LaTeX sources, and figures
-```
+All correlations use Spearman rank statistics; partial correlations are rank-transformed linear residualizations as defined in the manuscript. The ratio diagnostic in Fig. 2(b) uses the stabilizer value stated in the text. Uncertainty is estimated by hierarchical bootstrap: (L, seed) configurations are resampled first, then tasks within each resampled configuration.
 
-### `code/`
+## Scope note
 
-| File | Purpose |
-|---|---|
-| `scaling_sweep.py` | Main scaling experiment: builds the XYZ/Heisenberg meta-learning tasks, the hardware-efficient ansatz, the Reptile meta-initialization, and records the alignment, gradient norms, improvements, and gap per task across `n ∈ {4,6,8,10}`, `L ∈ {2,3,5}`. Also supports the random-initialization baseline and the alternative Hamiltonian families / entangler topologies. |
-| `v17_core.py`, `v17_fast.py`, `run_v17_cond.py` | Corollary run (n = 6, L = 3): the five movement-conditioned adaptation settings behind Tables I–II and Fig. 2. |
-| `analysis.py` | Robustness and partial-correlation analyses (stratified split, families/topologies, finite-shot proxy, baseline-corrected gap, held-out-loss control, K = 1 vs K = 10). |
-| `make_scaling_fig.py` | Generates Fig. 1 (`fig_scaling.pdf`). |
-| `make_pipeline.py` | Generates Fig. 4 (`fig1_pipeline.pdf`). |
-
-### `data/`
-
-All CSVs are authentic outputs of the scripts above — no values were hand-edited.
-
-| File | Used for |
-|---|---|
-| `results_pertask.csv` | Master per-task table for the scaling sweep (1800 rows: 4 sizes × 3 depths × 3 seeds × 50 tasks). Source for Fig. 1 and most main-text correlations. |
-| `results_summary.csv` | Per-configuration summary statistics. |
-| `results_barren.csv` | Barren-plateau probe: gradient-component variance and mean norm vs (n, L). |
-| `results_prefactor_CV.csv` | Coefficient of variation of ‖g_tr‖, ‖g_val‖, and the prefactor q (SM Table SI). |
-| `results_A_vs_heldout_loss.csv` | Alignment vs held-out loss, raw and controlled (SM Table SIII). |
-| `results_item8_baseline_corrected_gap.csv` | Baseline-corrected gap ΔG analysis. |
-| `results_item8_transfer_signal.csv` | Near-zero-mean-transfer statistics (SM Table SIV). |
-| `results_item5_stratified.csv` | Term-type-stratified split (SM Table SV). |
-| `results_item6_families.csv` | Additional Hamiltonian families and topologies (SM Table SVI). |
-| `results_item7_finiteshot.csv` | Finite-shot variance proxy check. |
-| `results_item13_randominit.csv` | Random-initialization baseline (per-task). |
-| `results_v17_pertask.csv`, `results_v17_tableI.csv`, `results_v17_tableII.csv` | Corollary run per-task table and the two summary tables. |
-| `results_positive_control_*.csv` | Synthetic positive control (channels-only vs genuine-channel per-task tables, summary, and injected-strength sensitivity; SM Sec. S6). |
-
-### `supplements/`
-
-`supplement.pdf` / `supplement.tex`
-(Supplemental Material), and `figs/` (all figures as PDF).
-
----
-
-## Reproducing the results
-
-### Environment
-
-Python 3.11+ with the packages in `requirements.txt`:
-
-```bash
-pip install -r requirements.txt
-```
-
-The experiments were run with PennyLane 0.45, NumPy 2.4, SciPy 1.17, pandas 3.0, and
-Matplotlib 3.10. All simulations are noise-free state-vector (`default.qubit`) with
-backpropagation gradients; randomness is fixed by explicit per-run seeds.
-
-### Regenerate the data
-
-```bash
-# main scaling sweep (writes results_pertask.csv, results_summary.csv, results_barren.csv)
-python code/scaling_sweep.py
-
-# corollary run (writes the v17 tables)
-python code/v17_fast.py
-
-# robustness / control analyses (reads the CSVs in data/)
-python code/reviewer_analysis.py
-```
-
-### Regenerate the figures
-
-```bash
-python code/make_scaling_fig.py   # Fig. 1
-python code/make_pipeline.py      # Fig. 4
-```
-
-Figures 2 and 3 are produced from the corollary run and its synthetic control; see
-`v17_corollary.ipynb`.
-
----
-
-## Notes on scope
-
-The primary task family is a **near-zero-mean observable-transfer regime by construction**: support
-adaptation improves the support loss but the mean validation improvement is ≈ 0 at every system
-size. This is intentional and is discussed in the paper; the contribution is a physical explanation
-of why trajectory diagnostics can still show apparent correlations with the held-out gap in this
-regime. See the manuscript for the full scope statement.
-
-## Citation
-
-If you use this code or data, please cite the paper (citation details to be added upon publication).
-
-## License
-
-Code is released under the MIT License. The manuscript and figures are subject to the
-copyright terms of the published article.
+The reported adjusted nulls are pooled-by-size statements in a same-query-set, empirically near-zero-mean-transfer, noise-free setting; configuration-level heterogeneity and the algebraic target-decomposition reading are documented in the manuscript and are part of the audit itself.
